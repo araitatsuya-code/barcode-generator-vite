@@ -24,9 +24,9 @@ const App = () => {
     barcodes.forEach((barcode, index) => {
       JsBarcode(`#barcode-${index}`, barcode.text, {
         format: barcode.type,
-        height: 40,
-        fontSize: 14,
-        width: 1,
+        height: 80,
+        fontSize: 16,
+        width: 2,
         displayValue: true,
       });
     });
@@ -39,7 +39,7 @@ const App = () => {
       JsBarcode(canvas, barcodeData, {
         format: options.format || "CODE128",
         width: 1,
-        height: options.height || 40,
+        height: 40,
         fontSize: 14,
         displayValue: options.displayValue !== false,
         ...options,
@@ -57,14 +57,12 @@ const App = () => {
 
   return (
     <div className="container mx-auto py-4">
-      <h1 className="text-3xl font-bold text-center mb-6">
-        バーコード作成アプリ
-      </h1>
+      <h1 className="text-3xl font-bold text-center mb-6">バーコード作成</h1>
       <div className="space-y-2 max-w-4xl mx-auto">
         {barcodes.map((barcode, index) => (
           <div
             key={index}
-            className="flex items-center space-x-2 p-2 bg-gray-50 rounded shadow-sm"
+            className="flex items-center space-x-2 p-2 bg-gray-50 rounded shadow-sm h-25"
           >
             {/* 番号ラベル */}
             <div className="w-10 h-10 flex justify-center items-center bg-blue-500 text-white font-bold rounded">
@@ -75,13 +73,13 @@ const App = () => {
               type="text"
               placeholder="バーコード番号"
               value={barcode.text}
-              className="border-2 p-3 rounded w-48 sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="border-2 p-2.5 rounded w-48 sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-300"
               onChange={(e) => handleInputChange(index, "text", e.target.value)}
             />
             <select
               value={barcode.type}
               onChange={(e) => handleInputChange(index, "type", e.target.value)}
-              className="border-2 p-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="border-2 p-2.5 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
               <option value="ean13">JANコード</option>
               <option value="itf">ITFコード</option>
@@ -91,7 +89,7 @@ const App = () => {
               onClick={() =>
                 saveBarcode(barcode.text, { format: barcode.type })
               }
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
             >
               保存
             </button>
