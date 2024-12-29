@@ -20,6 +20,7 @@ app.whenReady().then(() => {
   mainWindow.loadURL("http://localhost:5173");
 });
 
+// 非 macOS プラットフォームでウインドウが開かれていない時にアプリを終了する
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
