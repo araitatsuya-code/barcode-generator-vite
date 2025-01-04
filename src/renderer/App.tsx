@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import JsBarcode from "jsbarcode";
+import { FaFilePdf, FaFileImage } from "react-icons/fa";
 
 const App = () => {
   const [barcodes, setBarcodes] = useState(
@@ -32,23 +33,55 @@ const App = () => {
     });
   };
 
-  const saveBarcode = (barcodeData: string, options: any) => {
-    const canvas = document.createElement("canvas");
+  const saveBarcode = (
+    barcodeData: string,
+    options: any,
+    format: "png" | "svg"
+  ) => {
+    if (!barcodeData.trim()) {
+      alert("バーコード番号を入力してください。");
+      return;
+    }
 
     try {
-      JsBarcode(canvas, barcodeData, {
-        format: options.format || "CODE128",
-        width: 1,
-        height: 40,
-        fontSize: 14,
-        displayValue: options.displayValue !== false,
-        ...options,
-      });
+      if (format === "svg") {
+        // SVG形式での保存
+        const svg = document.createElement("svg");
+        JsBarcode(svg, barcodeData, {
+          format: options.format || "CODE128",
+          width: 1,
+          height: 40,
+          fontSize: 14,
+          displayValue: true,
+          ...options,
+        });
 
-      const link = document.createElement("a");
-      link.download = `barcode-${barcodeData}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const blob = new Blob([svgData], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.download = `barcode-${barcodeData}.svg`;
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+      } else {
+        // PNG形式での保存（既存のコード）
+        const canvas = document.createElement("canvas");
+        JsBarcode(canvas, barcodeData, {
+          format: options.format || "CODE128",
+          width: 1,
+          height: 40,
+          fontSize: 14,
+          displayValue: true,
+          ...options,
+        });
+
+        const link = document.createElement("a");
+        link.download = `barcode-${barcodeData}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      }
     } catch (error) {
       console.error("バーコード生成エラー:", error);
       alert("バーコードの生成に失敗しました。入力値を確認してください。");
@@ -62,7 +95,7 @@ const App = () => {
         {barcodes.map((barcode, index) => (
           <div
             key={index}
-            className="flex items-center space-x-2 p-2 bg-gray-50 rounded shadow-sm h-25"
+            className="flex items-center space-x-2 p-2 bg-gray-50 shadow-sm h-25"
           >
             {/* 番号ラベル */}
             <div className="w-10 h-10 flex justify-center items-center bg-blue-500 text-white font-bold rounded">
@@ -87,14 +120,36 @@ const App = () => {
             </select>
             <button
               onClick={() =>
-                saveBarcode(barcode.text, { format: barcode.type })
+                saveBarcode(barcode.text, { format: barcode.type }, "png")
               }
               className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
             >
               保存
             </button>
-            <div className="flex-1 flex justify-center">
+            <div className="flex-1 flex justify-center items-center space-x-2">
               <canvas id={`barcode-${index}`}></canvas>
+              <div className="flex flex-col space-y-2">
+                <button
+                  onClick={() =>
+                    saveBarcode(barcode.text, { format: barcode.type }, "png")
+                  }
+                  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 flex items-center space-x-1 text-sm"
+                  title="PNGとして保存"
+                >
+                  <FaFileImage />
+                  <span>PNG</span>
+                </button>
+                <button
+                  onClick={() =>
+                    saveBarcode(barcode.text, { format: barcode.type }, "svg")
+                  }
+                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 flex items-center space-x-1 text-sm"
+                  title="SVGとして保存"
+                >
+                  <FaFilePdf />
+                  <span>SVG</span>
+                </button>
+              </div>
             </div>
           </div>
         ))}
