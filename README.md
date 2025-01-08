@@ -1,8 +1,27 @@
-# React + Vite
+# バーコード生成アプリ
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 概要
+このアプリケーションは、複数のバーコードを一括で生成し、PNG形式またはSVG形式で保存できるデスクトップアプリケーションです。
 
-Currently, two official plugins are available:
+## 機能
+- 複数のバーコード同時生成
+- 対応フォーマット：
+  - JANコード（EAN-13）
+  - ITFコード
+  - GS1データバー
+- PNG/SVG形式での保存対応
+- バーコードタイプの一括変更
+- 入力値の一括クリア
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 使用方法
+1. アプリを起動
+2. バーコード番号を入力
+3. バーコードタイプを選択
+4. 「バーコードを作成」をクリック
+5. 必要に応じてPNGまたはSVG形式で保存
+
+## 詳細仕様
+詳細な仕様については[こちら](docs/SPECIFICATIONS.md)をご覧ください。
+
+## ライセンス
+MIT License
