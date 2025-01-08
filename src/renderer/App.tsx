@@ -6,6 +6,7 @@ const App = () => {
   const [barcodes, setBarcodes] = useState(
     Array.from({ length: 5 }, () => ({ text: "", type: "ean13" }))
   );
+  const [showBarcodes, setShowBarcodes] = useState(false);
 
   const handleInputChange = (index: number, field: string, value: string) => {
     const newBarcodes = [...barcodes];
@@ -22,15 +23,28 @@ const App = () => {
   };
 
   const generateBarcodes = () => {
-    barcodes.forEach((barcode, index) => {
-      JsBarcode(`#barcode-${index}`, barcode.text, {
-        format: barcode.type,
-        height: 80,
-        fontSize: 16,
-        width: 2,
-        displayValue: true,
+    setShowBarcodes(true);
+
+    // setShowBarcodesの状態が反映された後にバーコードを生成するため、
+    // setTimeout を使用して非同期処理にする
+    setTimeout(() => {
+      barcodes.forEach((barcode, index) => {
+        if (barcode.text) {
+          // 入力値がある場合のみバーコードを生成
+          try {
+            JsBarcode(`#barcode-${index}`, barcode.text, {
+              format: barcode.type,
+              height: 80,
+              fontSize: 16,
+              width: 2,
+              displayValue: true,
+            });
+          } catch (error) {
+            console.error(`バーコード生成エラー (${index + 1}番目):`, error);
+          }
+        }
       });
-    });
+    }, 0);
   };
 
   const saveBarcode = (
@@ -97,7 +111,6 @@ const App = () => {
             key={index}
             className="flex items-center space-x-2 p-2 bg-gray-50 shadow-sm h-25"
           >
-            {/* 番号ラベル */}
             <div className="w-10 h-10 flex justify-center items-center bg-blue-500 text-white font-bold rounded">
               {index + 1}
             </div>
@@ -118,39 +131,52 @@ const App = () => {
               <option value="itf">ITFコード</option>
               <option value="databar">GS1データバー</option>
             </select>
-            <button
-              onClick={() =>
-                saveBarcode(barcode.text, { format: barcode.type }, "png")
-              }
-              className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
-            >
-              保存
-            </button>
-            <div className="flex-1 flex justify-center items-center space-x-2">
-              <canvas id={`barcode-${index}`}></canvas>
-              <div className="flex flex-col space-y-2">
+
+            {showBarcodes && barcode.text && (
+              <>
                 <button
                   onClick={() =>
                     saveBarcode(barcode.text, { format: barcode.type }, "png")
                   }
-                  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 flex items-center space-x-1 text-sm"
-                  title="PNGとして保存"
+                  className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
                 >
-                  <FaFileImage />
-                  <span>PNG</span>
+                  保存
                 </button>
-                <button
-                  onClick={() =>
-                    saveBarcode(barcode.text, { format: barcode.type }, "svg")
-                  }
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 flex items-center space-x-1 text-sm"
-                  title="SVGとして保存"
-                >
-                  <FaFilePdf />
-                  <span>SVG</span>
-                </button>
-              </div>
-            </div>
+                <div className="flex-1 flex justify-center items-center space-x-2">
+                  <canvas id={`barcode-${index}`}></canvas>
+                  <div className="flex flex-col space-y-2">
+                    <button
+                      onClick={() =>
+                        saveBarcode(
+                          barcode.text,
+                          { format: barcode.type },
+                          "png"
+                        )
+                      }
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 flex items-center space-x-1 text-sm"
+                      title="PNGとして保存"
+                    >
+                      <FaFileImage />
+                      <span>PNG</span>
+                    </button>
+                    <button
+                      onClick={() =>
+                        saveBarcode(
+                          barcode.text,
+                          { format: barcode.type },
+                          "svg"
+                        )
+                      }
+                      className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 flex items-center space-x-1 text-sm"
+                      title="SVGとして保存"
+                    >
+                      <FaFilePdf />
+                      <span>SVG</span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         ))}
       </div>
