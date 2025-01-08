@@ -110,11 +110,26 @@ const App = () => {
     setBarcodes(newBarcodes);
   };
 
+  const clearAllBarcodes = () => {
+    const clearedBarcodes = barcodes.map((barcode) => ({
+      ...barcode,
+      text: "",
+    }));
+    setBarcodes(clearedBarcodes);
+    setShowBarcodes(false);
+  };
+
   return (
     <div className="container mx-auto py-4">
       <h1 className="text-3xl font-bold text-center mb-6">バーコード作成</h1>
       <div className="flex justify-end mb-4 max-w-4xl mx-auto">
         <div className="flex items-center space-x-2">
+          <button
+            onClick={clearAllBarcodes}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-red-600 mr-4"
+          >
+            一括クリア
+          </button>
           <span className="text-sm text-gray-600">一括変更：</span>
           <select
             onChange={(e) => handleBulkTypeChange(e.target.value)}
