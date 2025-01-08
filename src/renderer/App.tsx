@@ -214,7 +214,7 @@ const App = () => {
           onClick={generateBarcodes}
           className="bg-indigo-500 text-white px-6 py-2 rounded hover:bg-indigo-600 ml-4"
         >
-          生成
+          バーコードを作成
         </button>
       </div>
     </div>
