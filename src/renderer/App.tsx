@@ -102,9 +102,31 @@ const App = () => {
     }
   };
 
+  const handleBulkTypeChange = (newType: string) => {
+    const newBarcodes = barcodes.map((barcode) => ({
+      ...barcode,
+      type: newType,
+    }));
+    setBarcodes(newBarcodes);
+  };
+
   return (
     <div className="container mx-auto py-4">
       <h1 className="text-3xl font-bold text-center mb-6">バーコード作成</h1>
+      <div className="flex justify-end mb-4 max-w-4xl mx-auto">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-gray-600">一括変更：</span>
+          <select
+            onChange={(e) => handleBulkTypeChange(e.target.value)}
+            className="border-2 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+          >
+            <option value="">選択してください</option>
+            <option value="ean13">JANコード</option>
+            <option value="itf">ITFコード</option>
+            <option value="databar">GS1データバー</option>
+          </select>
+        </div>
+      </div>
       <div className="space-y-2 max-w-4xl mx-auto">
         {barcodes.map((barcode, index) => (
           <div
