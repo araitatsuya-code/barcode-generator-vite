@@ -63,7 +63,26 @@ const App = () => {
   // バーコードセットを読み込む
   const loadBarcodeSet = (set: BarcodeSet) => {
     setBarcodes(set.barcodes);
-    setShowBarcodes(false);
+    setShowBarcodes(true);
+
+    // バーコードの生成を遅延実行
+    setTimeout(() => {
+      set.barcodes.forEach((barcode, index) => {
+        if (barcode.text) {
+          try {
+            JsBarcode(`#barcode-${index}`, barcode.text, {
+              format: barcode.type,
+              height: 80,
+              fontSize: 16,
+              width: 2,
+              displayValue: true,
+            });
+          } catch (error) {
+            console.error(`バーコード生成エラー (${index + 1}番目):`, error);
+          }
+        }
+      });
+    }, 0);
   };
 
   const handleInputChange = (index: number, field: string, value: string) => {
