@@ -1,26 +1,42 @@
 import { app, BrowserWindow } from "electron";
-import path from "path";
-import { fileURLToPath } from "url";
+import * as path from "path";
 
-// __dirname代替
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+let mainWindow: BrowserWindow | null = null;
 
-let mainWindow;
-
-app.whenReady().then(() => {
+function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 700,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      nodeIntegration: true,
+      contextIsolation: false,
+      webSecurity: false  // 開発時のみtrueにすることを推奨
     },
   });
 
-  mainWindow.loadURL("http://localhost:5173");
-});
+  // 開発モードではローカルサーバーを使用
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.loadURL("http://localhost:5173");
+  } else {
+    // 本番モードではビルドされたファイルを読み込む
+    mainWindow.loadFile(path.join(__dirname, "renderer", "index.html"));
+  }
+
+  // 開発ツールを開く（デバッグ用）
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.webContents.openDevTools();
+  }
+}
+
+app.whenReady().then(createWindow);
 
 // 非 macOS プラットフォームでウインドウが開かれていない時にアプリを終了する
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
+});
+
+app.on("activate", () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
 });

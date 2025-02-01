@@ -10,23 +10,23 @@ import {
   FaTrash,
 } from "react-icons/fa";
 
-// 新しい型定義
 interface BarcodeSet {
   id: string;
   name: string;
-  barcodes: {
-    text: string;
-    type: string;
-  }[];
+  barcodes: Barcode[];
   createdAt: string;
 }
 
+interface Barcode {
+  text: string;
+  type: string;
+}
+
 const App = () => {
-  const [barcodes, setBarcodes] = useState(
+  const [barcodes, setBarcodes] = useState<Barcode[]>(
     Array.from({ length: 5 }, () => ({ text: "", type: "ean13" }))
   );
   const [showBarcodes, setShowBarcodes] = useState(false);
-  // 新しいstate
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
   const [barcodeSets, setBarcodeSets] = useState<BarcodeSet[]>([]);
   const [setName, setSetName] = useState("");
@@ -85,7 +85,11 @@ const App = () => {
     }, 0);
   };
 
-  const handleInputChange = (index: number, field: string, value: string) => {
+  const handleInputChange = (
+    index: number,
+    field: "text" | "type", // 許可されるフィールドを明示的に指定
+    value: string
+  ) => {
     const newBarcodes = [...barcodes];
     if (field === "text") {
       // スペース、ハイフン、全角スペースを除去
@@ -107,8 +111,12 @@ const App = () => {
     setTimeout(() => {
       barcodes.forEach((barcode, index) => {
         if (barcode.text) {
-          // 入力値がある場合のみバーコードを生成
           try {
+            const canvas = document.getElementById(`barcode-${index}`);
+            if (!canvas) {
+              console.error(`Canvas element not found: barcode-${index}`);
+              return;
+            }
             JsBarcode(`#barcode-${index}`, barcode.text, {
               format: barcode.type,
               height: 80,
@@ -117,11 +125,14 @@ const App = () => {
               displayValue: true,
             });
           } catch (error) {
-            console.error(`バーコード生成エラー (${index + 1}番目):`, error);
+            console.error(`バーコード生成エラー (${index + 1}番目):`, error, {
+              text: barcode.text,
+              type: barcode.type
+            });
           }
         }
       });
-    }, 0);
+    }, 100);  // タイミングの問題を防ぐため、遅延を少し長めに
   };
 
   const saveBarcode = (

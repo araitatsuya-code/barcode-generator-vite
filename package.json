@@ -2,18 +2,26 @@
   "name": "barcode-generator-vite",
   "private": true,
   "version": "1.0.0",
-  "main": "src/main/main.ts",
-  "type": "module",
+  "description": "バーコード生成デスクトップアプリケーション",
+  "author": {
+    "name": "Your Name",
+    "email": "your.email@example.com"
+  },
+  "main": "dist/main/main.js",
+  "type": "commonjs",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite && electron ."
+    "start": "electron .",
+    "watch": "tsc -w",
+    "electron-dev": "concurrently \"npm run dev\" \"npm run watch\" \"electron .\"",
+    "build:electron": "npm run build && electron-builder",
+    "dist": "electron-builder"
   },
   "dependencies": {
     "autoprefixer": "^10.4.20",
-    "electron": "^33.2.1",
     "electron-store": "^10.0.0",
     "jsbarcode": "^3.11.6",
     "jspdf": "^2.5.2",
@@ -26,14 +34,53 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@types/node": "^20.0.0",
     "@types/react": "^18.3.17",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^8.0.0",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
     "eslint": "^9.17.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.13.0",
+    "typescript": "^5.0.0",
     "vite": "^6.0.6"
+  },
+  "build": {
+    "appId": "com.barcode.generator",
+    "productName": "Barcode Generator",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json",
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "dist/renderer",
+        "to": "renderer",
+        "filter": ["**/*"]
+      }
+    ],
+    "mac": {
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
   }
 }

@@ -5,8 +5,15 @@ import path from "path";
 export default defineConfig({
   root: "src/renderer",
   build: {
-    outDir: path.resolve(__dirname, "dist"),
+    outDir: path.resolve(__dirname, "dist/renderer"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: '[name].js',
+        chunkFileNames: '[name].js',
+        assetFileNames: '[name].[ext]'
+      }
+    }
   },
   resolve: {
     alias: {
@@ -14,4 +21,5 @@ export default defineConfig({
     },
   },
   plugins: [react()],
+  base: "./",
 });
