@@ -8,9 +8,10 @@ function createWindow() {
     width: 1000,
     height: 700,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      webSecurity: false  // 開発時のみtrueにすることを推奨
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: false,
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
@@ -18,14 +19,20 @@ function createWindow() {
   if (process.env.NODE_ENV === "development") {
     mainWindow.loadURL("http://localhost:5173");
   } else {
-    // 本番モードではビルドされたファイルを読み込む
-    mainWindow.loadFile(path.join(__dirname, "renderer", "index.html"));
+    // アプリがパッケージ化されているかチェック
+    const isPackaged = app.isPackaged;
+    const htmlPath = isPackaged
+      ? path.join(process.resourcesPath, "renderer", "index.html")
+      : path.join(__dirname, "../renderer/index.html");
+    mainWindow.loadFile(htmlPath);
   }
 
   // 開発ツールを開く（デバッグ用）
   if (process.env.NODE_ENV === "development") {
     mainWindow.webContents.openDevTools();
   }
+  // 本番環境でもデバッグ用にDevToolsを開く（問題解決後にコメントアウト可）
+  mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(createWindow);
