@@ -6,6 +6,16 @@ import {
   validateEAN13CheckDigit,
 } from "../utils/barcodeUtils";
 
+// バーコードタイプの定義を追加
+type BarcodeType = "ean13" | "itf" | "code128";
+
+// バーコードタイプのマッピングを追加
+const barcodeTypeMap: Record<string, BarcodeType> = {
+  ean13: "ean13",
+  itf: "itf",
+  databar: "code128", // GS1データバーはcode128として処理
+};
+
 export const useBarcodeGeneration = () => {
   const [barcodes, setBarcodes] = useState<Barcode[]>(
     Array.from({ length: 5 }, () => ({ text: "", type: "ean13" }))
@@ -81,7 +91,45 @@ export const useBarcodeGeneration = () => {
 
   const generateBarcodes = () => {
     setShowBarcodes(true);
-    // ... 既存のgenerateBarcodesロジック ...
+
+    setTimeout(() => {
+      barcodes.forEach((barcode, index) => {
+        if (barcode.text) {
+          try {
+            const canvas = document.getElementById(`barcode-${index}`);
+            if (!canvas) {
+              console.error(`Canvas element not found: barcode-${index}`);
+              return;
+            }
+
+            // バーコードタイプの変換
+            const format = barcodeTypeMap[barcode.type] || "code128";
+
+            JsBarcode(`#barcode-${index}`, barcode.text, {
+              format: format, // 変換したフォーマットを使用
+              height: 80,
+              fontSize: 16,
+              width: 2,
+              displayValue: true,
+              valid: (valid: boolean) => {
+                if (!valid) {
+                  console.error(`不正なバーコード値: ${barcode.text}`);
+                }
+              },
+            });
+          } catch (error) {
+            console.error(`バーコード生成エラー (${index + 1}番目):`, error);
+            const errorMessage =
+              error instanceof Error
+                ? error.message
+                : "不明なエラーが発生しました";
+            alert(
+              `バーコード${index + 1}の生成に失敗しました: ${errorMessage}`
+            );
+          }
+        }
+      });
+    }, 0);
   };
 
   return {

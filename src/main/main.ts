@@ -32,7 +32,7 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   }
   // 本番環境でもデバッグ用にDevToolsを開く（問題解決後にコメントアウト可）
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 }
 
 app.whenReady().then(createWindow);

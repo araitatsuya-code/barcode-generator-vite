@@ -1,3 +1,15 @@
+import JsBarcode from "jsbarcode";
+
+// options の型を定義
+interface BarcodeOptions {
+  format?: string;
+  width?: number;
+  height?: number;
+  fontSize?: number;
+  displayValue?: boolean;
+  [key: string]: any;
+}
+
 export const calculateEAN13CheckDigit = (code: string): string => {
   const digits = code.slice(0, 12).split("").map(Number);
   let sum = 0;
@@ -17,7 +29,7 @@ export const validateEAN13CheckDigit = (code: string): boolean => {
 
 export const saveBarcode = (
   barcodeData: string,
-  options: any,
+  options: BarcodeOptions,
   format: "png" | "svg"
 ) => {
   if (!barcodeData.trim()) {
