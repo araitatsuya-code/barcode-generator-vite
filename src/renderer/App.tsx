@@ -87,13 +87,24 @@ const App = () => {
 
   const handleInputChange = (
     index: number,
-    field: "text" | "type", // 許可されるフィールドを明示的に指定
+    field: "text" | "type",
     value: string
   ) => {
     const newBarcodes = [...barcodes];
     if (field === "text") {
       // スペース、ハイフン、全角スペースを除去
       value = value.replace(/[\s\-　]/g, "");
+      // EAN-13の場合、13桁入力された時点でチェックディジットを検証
+      if (value.length === 13 && newBarcodes[index].type === "ean13") {
+        if (!validateEAN13CheckDigit(value)) {
+          const correctValue = calculateEAN13CheckDigit(value);
+          alert(
+            `チェックディジットが正しくありません。\n` +
+              `入力値: ${value}\n` +
+              `正しい値: ${correctValue}`
+          );
+        }
+      }
     }
     newBarcodes[index][field] = value;
     setBarcodes(newBarcodes);
@@ -103,11 +114,30 @@ const App = () => {
     setBarcodes([...barcodes, { text: "", type: "ean13" }]);
   };
 
+  // EAN-13のチェックデジットを計算する関数
+  const calculateEAN13CheckDigit = (code: string): string => {
+    // 最初の12桁を使用
+    const digits = code.slice(0, 12).split("").map(Number);
+    let sum = 0;
+
+    digits.forEach((digit, index) => {
+      // 偶数位置は3倍、奇数位置は1倍
+      sum += digit * (index % 2 === 0 ? 1 : 3);
+    });
+
+    const checkDigit = (10 - (sum % 10)) % 10;
+    return code.slice(0, 12) + checkDigit;
+  };
+
+  // チェックディジットの検証
+  const validateEAN13CheckDigit = (code: string): boolean => {
+    const correctCode = calculateEAN13CheckDigit(code);
+    return code === correctCode;
+  };
+
   const generateBarcodes = () => {
     setShowBarcodes(true);
 
-    // setShowBarcodesの状態が反映された後にバーコードを生成するため、
-    // setTimeout を使用して非同期処理にする
     setTimeout(() => {
       barcodes.forEach((barcode, index) => {
         if (barcode.text) {
@@ -117,22 +147,63 @@ const App = () => {
               console.error(`Canvas element not found: barcode-${index}`);
               return;
             }
+            // バーコードのバリデーション
+            if (barcode.type === "ean13") {
+              if (barcode.text.length !== 13) {
+                throw new Error(
+                  `EAN-13は13桁である必要があります: ${barcode.text}`
+                );
+              }
+              // チェックデジットの検証と修正
+              const correctEAN13 = calculateEAN13CheckDigit(barcode.text);
+              if (barcode.text !== correctEAN13) {
+                const userConfirmed = window.confirm(
+                  `バーコード${
+                    index + 1
+                  }のチェックディジットが正しくありません。\n` +
+                    `現在の値: ${barcode.text}\n` +
+                    `正しい値: ${correctEAN13}\n\n` +
+                    `正しい値に修正しますか？`
+                );
+                if (userConfirmed) {
+                  const newBarcodes = [...barcodes];
+                  newBarcodes[index].text = correctEAN13;
+                  setBarcodes(newBarcodes);
+                  barcode.text = correctEAN13;
+                } else {
+                  throw new Error(
+                    `チェックディジットが正しくありません。\n` +
+                      `正しい値は ${correctEAN13} です。`
+                  );
+                }
+              }
+            }
             JsBarcode(`#barcode-${index}`, barcode.text, {
               format: barcode.type,
               height: 80,
               fontSize: 16,
               width: 2,
               displayValue: true,
+              valid: (valid: boolean) => {
+                if (!valid) {
+                  console.error(`不正なバーコード値: ${barcode.text}`);
+                }
+              },
             });
           } catch (error) {
-            console.error(`バーコード生成エラー (${index + 1}番目):`, error, {
-              text: barcode.text,
-              type: barcode.type
-            });
+            console.error(`バーコード生成エラー (${index + 1}番目):`, error);
+            // エラーメッセージを表示
+            const errorMessage =
+              error instanceof Error
+                ? error.message
+                : "不明なエラーが発生しました";
+            alert(
+              `バーコード${index + 1}の生成に失敗しました: ${errorMessage}`
+            );
           }
         }
       });
-    }, 100);  // タイミングの問題を防ぐため、遅延を少し長めに
+    }, 0);
   };
 
   const saveBarcode = (
