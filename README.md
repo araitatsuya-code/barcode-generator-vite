@@ -32,3 +32,9 @@
 
 ## ライセンス
 MIT License
+
+## 開発環境のセットアップ
+
+1. `.env.example`を`.env`にコピー
+2. `.env`ファイルに必要な情報を設定
+   - `APPLE_DEVELOPER_IDENTITY`: Apple Developer証明書ID

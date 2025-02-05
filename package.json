@@ -85,7 +85,7 @@
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
-      "identity": "Apple Development: your.email@example.com (TEAM_ID)",
+      "identity": "${process.env.APPLE_DEVELOPER_IDENTITY}",
       "icon": "src/assets/icon.icns"
     },
     "win": {
