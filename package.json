@@ -50,8 +50,9 @@
     "tailwindcss": "^3.4.17"
   },
   "build": {
-    "appId": "com.barcode.generator",
+    "appId": "com.example.barcode-generator",
     "productName": "Barcode Generator",
+    "icon": "src/assets/icon",
     "directories": {
       "output": "release"
     },
@@ -64,27 +65,40 @@
         "from": "dist/renderer",
         "to": "renderer",
         "filter": ["**/*"]
+      },
+      {
+        "from": "src/assets/icon.png",
+        "to": "icon.png"
       }
     ],
     "mac": {
       "target": [
-        "dmg"
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
-      "identity": null
+      "identity": "Apple Development: your.email@example.com (TEAM_ID)",
+      "icon": "src/assets/icon.icns"
     },
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "src/assets/icon.ico"
     },
     "linux": {
       "target": [
         "AppImage"
-      ]
+      ],
+      "icon": "src/assets/icon.png"
     }
   }
 }

@@ -3,10 +3,23 @@ import * as path from "path";
 
 let mainWindow: BrowserWindow | null = null;
 
+// アイコンパスの取得
+const getIconPath = () => {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, "icon.png")
+    : path.join(__dirname, "../assets/icon.png");
+};
+
+// Macの場合、Dockアイコンを設定
+if (process.platform === "darwin") {
+  app.dock.setIcon(getIconPath());
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 700,
+    icon: getIconPath(),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
