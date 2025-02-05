@@ -35,6 +35,39 @@ MIT License
 
 ## 開発環境のセットアップ
 
+### 必要な環境
+- Node.js (v18以上)
+- npm (v9以上)
+
+### インストール手順
 1. `.env.example`を`.env`にコピー
 2. `.env`ファイルに必要な情報を設定
    - `APPLE_DEVELOPER_IDENTITY`: Apple Developer証明書ID
+
+### 依存関係のインストール
+```bash
+npm install
+```
+
+### 開発モードでの起動
+```bash
+# 開発サーバーの起動（ホットリロード対応）
+npm run electron-dev
+```
+
+### ビルド
+```bash
+# プロダクションビルド
+npm run build:electron
+```
+
+### 開発用スクリプト
+- `npm run dev`: Viteの開発サーバーを起動
+- `npm run electron-dev`: Electron + Viteの開発環境を起動
+- `npm run build`: アプリケーションのビルド
+- `npm run build:electron`: 配布用パッケージの作成
+
+### 注意事項
+- macOSでの開発時は、署名関連の設定が必要です
+- 開発モードではDevToolsが自動的に開きます
+- `src/main/main.ts`の変更時は、アプリケーションの再起動が必要です
