@@ -42,7 +42,11 @@ const App = () => {
   } = useBarcodeGeneration();
 
   return (
-    <div className={`flex h-screen ${isDarkMode ? "dark" : ""}`}>
+    <div
+      className={`flex min-h-screen ${
+        isDarkMode ? "dark" : ""
+      } dark:bg-gray-900 bg-white`}
+    >
       <Sidebar
         isOpenSidebar={isOpenSidebar}
         barcodeSets={barcodeSets}
@@ -52,7 +56,7 @@ const App = () => {
         deleteSet={deleteSet}
       />
 
-      <div className="flex-1 min-h-screen bg-white dark:bg-gray-900">
+      <div className="flex-1">
         <Header
           setIsOpenSidebar={setIsOpenSidebar}
           isOpenSidebar={isOpenSidebar}

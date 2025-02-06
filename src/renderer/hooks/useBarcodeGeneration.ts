@@ -53,8 +53,11 @@ export const useBarcodeGeneration = () => {
       set.barcodes.forEach((barcode, index) => {
         if (barcode.text) {
           try {
+            // バーコードタイプの変換を追加
+            const format = barcodeTypeMap[barcode.type] || "code128";
+
             JsBarcode(`#barcode-${index}`, barcode.text, {
-              format: barcode.type,
+              format: format,
               height: 80,
               fontSize: 16,
               width: 2,
@@ -62,6 +65,13 @@ export const useBarcodeGeneration = () => {
             });
           } catch (error) {
             console.error(`バーコード生成エラー (${index + 1}番目):`, error);
+            const errorMessage =
+              error instanceof Error
+                ? error.message
+                : "不明なエラーが発生しました";
+            alert(
+              `バーコード${index + 1}の生成に失敗しました: ${errorMessage}`
+            );
           }
         }
       });
