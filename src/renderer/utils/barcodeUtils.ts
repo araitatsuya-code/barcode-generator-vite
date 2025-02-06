@@ -46,7 +46,9 @@ export const saveBarcode = (
 
   try {
     // バーコードタイプの変換
-    const barcodeFormat = barcodeTypeMap[options.format] || "code128";
+    const barcodeFormat = options.format
+      ? barcodeTypeMap[options.format]
+      : "code128";
 
     if (format === "svg") {
       const svg = document.createElement("svg");
