@@ -10,6 +10,13 @@ interface BarcodeOptions {
   [key: string]: any;
 }
 
+// バーコードタイプのマッピングを追加
+const barcodeTypeMap: Record<string, string> = {
+  ean13: "ean13",
+  itf: "itf",
+  databar: "code128", // GS1データバーはcode128として処理
+};
+
 export const calculateEAN13CheckDigit = (code: string): string => {
   const digits = code.slice(0, 12).split("").map(Number);
   let sum = 0;
@@ -38,10 +45,13 @@ export const saveBarcode = (
   }
 
   try {
+    // バーコードタイプの変換
+    const barcodeFormat = barcodeTypeMap[options.format] || "code128";
+
     if (format === "svg") {
       const svg = document.createElement("svg");
       JsBarcode(svg, barcodeData, {
-        format: options.format || "CODE128",
+        format: barcodeFormat,
         width: 1,
         height: 40,
         fontSize: 14,
@@ -61,7 +71,7 @@ export const saveBarcode = (
     } else {
       const canvas = document.createElement("canvas");
       JsBarcode(canvas, barcodeData, {
-        format: options.format || "CODE128",
+        format: barcodeFormat,
         width: 1,
         height: 40,
         fontSize: 14,
