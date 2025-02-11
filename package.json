@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "description": "バーコード生成デスクトップアプリケーション",
   "author": {
-    "name": "Your Name",
-    "email": "your.email@example.com"
+    "name": "araitatsuya_code",
+    "email": "${process.env.AUTHOR_EMAIL}"
   },
   "main": "dist/main/main.js",
   "type": "commonjs",
