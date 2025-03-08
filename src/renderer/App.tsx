@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { BarcodeForm } from "./components/BarcodeForm";
@@ -7,15 +7,6 @@ import { useBarcodeSet } from "./hooks/useBarcodeSet";
 import { useBarcodeGeneration } from "./hooks/useBarcodeGeneration";
 import { useDarkMode } from "./hooks/useDarkMode";
 import { saveBarcode } from "./utils/barcodeUtils";
-import {
-  FaFilePdf,
-  FaFileImage,
-  FaSave,
-  FaList,
-  FaFileExport,
-  FaFileImport,
-  FaTrash,
-} from "react-icons/fa";
 
 const App = () => {
   const [isOpenSidebar, setIsOpenSidebar] = useState(false);
