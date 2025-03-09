@@ -53,3 +53,10 @@ dist-ssr
 # Cache
 .cache
 .temp
+
+# Electron Forge
+.forge
+.forge-cache
+
+# Electron Builder
+.electron-builder
