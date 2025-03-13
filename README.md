@@ -35,39 +35,77 @@ MIT License
 
 ## 開発環境のセットアップ
 
-### 必要な環境
+### 必要条件
 - Node.js (v18以上)
 - npm (v9以上)
+- macOSでビルドする場合：Apple Developer Programのメンバーシップ
 
-### インストール手順
-1. `.env.example`を`.env`にコピー
-2. `.env`ファイルに必要な情報を設定
-   - `APPLE_DEVELOPER_IDENTITY`: Apple Developer証明書ID
+### 初期セットアップ
+1. リポジトリをクローン：
+   ```bash
+   git clone https://github.com/araitatsuya-code/barcode-generator-vite.git
+   cd barcode-generator-vite
+   ```
 
-### 依存関係のインストール
+2. 依存関係のインストール：
+   ```bash
+   npm install
+   ```
+
+3. 環境変数の設定：
+   - `.env.example`を`.env`にコピー：
+     ```bash
+     cp .env.example .env
+     ```
+   - `.env`ファイルを編集して、以下の必要な情報を設定：
+     ```
+     AUTHOR_EMAIL=your.email@example.com
+     APPLE_DEVELOPER_IDENTITY=Your Name (TEAM_ID)
+     APPLE_ID=your.apple.id@example.com
+     APPLE_APP_SPECIFIC_PASSWORD=your-app-specific-password
+     APPLE_TEAM_ID=YOUR_TEAM_ID
+     ```
+
+### 開発モード
 ```bash
-npm install
-```
-
-### 開発モードでの起動
-```bash
-# 開発サーバーの起動（ホットリロード対応）
+# Electron + Viteの開発環境を起動（ホットリロード対応）
 npm run electron-dev
 ```
 
-### ビルド
+### ビルドと配布
+
+#### 一般的なビルド
 ```bash
-# プロダクションビルド
+# 基本的なビルド（署名なし）
 npm run build:electron
 ```
 
-### 開発用スクリプト
-- `npm run dev`: Viteの開発サーバーを起動
-- `npm run electron-dev`: Electron + Viteの開発環境を起動
-- `npm run build`: アプリケーションのビルド
-- `npm run build:electron`: 配布用パッケージの作成
+#### macOS向け署名と公証
+macOSアプリを配布用に署名・公証するには：
 
-### 注意事項
-- macOSでの開発時は、署名関連の設定が必要です
-- 開発モードではDevToolsが自動的に開きます
-- `src/main/main.ts`の変更時は、アプリケーションの再起動が必要です
+1. Apple Developer Programに登録済みであることを確認
+2. `.env`ファイルに正しい認証情報を設定していることを確認
+3. 以下のコマンドを実行：
+   ```bash
+   npm run dist
+   ```
+4. 署名・公証済みのアプリは`release`フォルダに生成されます
+
+#### Windows向けビルド
+```bash
+# Windowsインストーラーの作成
+npm run build:electron
+```
+
+### トラブルシューティング
+
+- **署名エラー**: `.env`ファイルの認証情報が正しいか確認してください
+- **ビルドエラー**: Node.jsとnpmが最新バージョンか確認してください
+- **開発モードでの問題**: `npm cache clean --force`を実行してから再度依存関係をインストールしてみてください
+
+### 開発用スクリプト一覧
+- `npm run dev`: Viteの開発サーバーのみ起動
+- `npm run build`: フロントエンドのビルドのみ実行
+- `npm run electron-dev`: Electron + Viteの開発環境を起動（開発時に使用）
+- `npm run build:electron`: 配布用パッケージの作成（署名なし）
+- `npm run dist`: 署名と公証を含む完全な配布用パッケージの作成（macOS）
