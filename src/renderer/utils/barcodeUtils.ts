@@ -58,7 +58,6 @@ export const saveBarcode = (
         height: 40,
         fontSize: 14,
         displayValue: true,
-        ...options,
       });
 
       const svgData = new XMLSerializer().serializeToString(svg);
@@ -68,7 +67,11 @@ export const saveBarcode = (
       const link = document.createElement("a");
       link.download = `barcode-${barcodeData}.svg`;
       link.href = url;
+      
+      // リンクをDOMに追加してからクリック
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } else {
       const canvas = document.createElement("canvas");
@@ -78,13 +81,17 @@ export const saveBarcode = (
         height: 40,
         fontSize: 14,
         displayValue: true,
-        ...options,
       });
 
       const link = document.createElement("a");
       link.download = `barcode-${barcodeData}.png`;
       link.href = canvas.toDataURL("image/png");
+      link.type = "image/png";
+      
+      // リンクをDOMに追加してからクリック
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     }
   } catch (error) {
     console.error("バーコード生成エラー:", error);
