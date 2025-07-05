@@ -29,6 +29,7 @@ const App = () => {
     handleBulkTypeChange,
     clearAllBarcodes,
     addBarcodeField,
+    deleteBarcodeField,
     generateBarcodes,
   } = useBarcodeGeneration();
 
@@ -68,6 +69,7 @@ const App = () => {
             handleInputChange={handleInputChange}
             handleBulkTypeChange={handleBulkTypeChange}
             clearAllBarcodes={clearAllBarcodes}
+            deleteBarcodeField={deleteBarcodeField}
             saveBarcode={saveBarcode}
           />
 

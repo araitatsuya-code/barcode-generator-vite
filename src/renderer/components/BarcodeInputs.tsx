@@ -1,5 +1,5 @@
 import React from "react";
-import { FaFileImage, FaFilePdf } from "react-icons/fa";
+import { FaFileImage, FaFilePdf, FaTrash } from "react-icons/fa";
 import { Barcode } from "../types";
 
 interface BarcodeInputsProps {
@@ -12,6 +12,7 @@ interface BarcodeInputsProps {
   ) => void;
   handleBulkTypeChange: (newType: string) => void;
   clearAllBarcodes: () => void;
+  deleteBarcodeField: (index: number) => void;
   saveBarcode: (
     barcodeData: string,
     options: any,
@@ -25,6 +26,7 @@ export const BarcodeInputs: React.FC<BarcodeInputsProps> = ({
   handleInputChange,
   handleBulkTypeChange,
   clearAllBarcodes,
+  deleteBarcodeField,
   saveBarcode,
 }) => {
   return (
@@ -93,6 +95,16 @@ export const BarcodeInputs: React.FC<BarcodeInputsProps> = ({
                     <option value="itf">ITFコード</option>
                     <option value="databar">GS1データバー</option>
                   </select>
+                  {barcodes.length > 1 && (
+                    <button
+                      onClick={() => deleteBarcodeField(index)}
+                      className="bg-gray-400 dark:bg-gray-500 text-white px-3 py-2.5 rounded 
+                        hover:bg-red-500 dark:hover:bg-red-600 transition-colors"
+                      title="このバーコードを削除"
+                    >
+                      <FaTrash />
+                    </button>
+                  )}
                 </div>
                 <div className="flex space-x-2">
                   <input

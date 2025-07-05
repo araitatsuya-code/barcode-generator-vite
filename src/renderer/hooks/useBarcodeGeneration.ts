@@ -99,6 +99,53 @@ export const useBarcodeGeneration = () => {
     setBarcodes([...barcodes, { text: "", type: "ean13" }]);
   };
 
+  const deleteBarcodeField = (index: number) => {
+    if (barcodes.length > 1) {
+      const newBarcodes = barcodes.filter((_, i) => i !== index);
+      setBarcodes(newBarcodes);
+      
+      // バーコードが表示されている場合は再生成をトリガー
+      if (showBarcodes) {
+        setShowBarcodes(false);
+        setTimeout(() => {
+          setShowBarcodes(true);
+          setTimeout(() => {
+            newBarcodes.forEach((barcode, barcodeIndex) => {
+              if (barcode.text) {
+                try {
+                  const canvas = document.getElementById(`barcode-${barcodeIndex}`);
+                  if (!canvas) {
+                    console.error(`Canvas element not found: barcode-${barcodeIndex}`);
+                    return;
+                  }
+
+                  const format = barcodeTypeMap[barcode.type] || "code128";
+
+                  JsBarcode(`#barcode-${barcodeIndex}`, barcode.text, {
+                    format: format,
+                    height: 80,
+                    fontSize: 16,
+                    width: 2,
+                    displayValue: true,
+                    valid: (valid: boolean) => {
+                      if (!valid) {
+                        console.error(`不正なバーコード値: ${barcode.text}`);
+                      }
+                    },
+                  });
+                } catch (error) {
+                  console.error(`バーコード生成エラー (${barcodeIndex + 1}番目):`, error);
+                }
+              }
+            });
+          }, 100);
+        }, 100);
+      }
+    } else {
+      alert("最低1つのバーコード入力フィールドが必要です。");
+    }
+  };
+
   const generateBarcodes = () => {
     setShowBarcodes(true);
 
@@ -150,6 +197,7 @@ export const useBarcodeGeneration = () => {
     handleBulkTypeChange,
     clearAllBarcodes,
     addBarcodeField,
+    deleteBarcodeField,
     generateBarcodes,
   };
 };
