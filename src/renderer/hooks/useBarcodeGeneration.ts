@@ -24,7 +24,7 @@ export const useBarcodeGeneration = () => {
 
   const handleInputChange = (
     index: number,
-    field: "text" | "type",
+    field: "text" | "type" | "name" | "note",
     value: string
   ) => {
     const newBarcodes = [...barcodes];

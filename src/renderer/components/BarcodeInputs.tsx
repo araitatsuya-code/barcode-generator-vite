@@ -7,7 +7,7 @@ interface BarcodeInputsProps {
   showBarcodes: boolean;
   handleInputChange: (
     index: number,
-    field: "text" | "type",
+    field: "text" | "type" | "name" | "note",
     value: string
   ) => void;
   handleBulkTypeChange: (newType: string) => void;
@@ -58,8 +58,8 @@ export const BarcodeInputs: React.FC<BarcodeInputsProps> = ({
         {barcodes.map((barcode, index) => (
           <div
             key={index}
-            className="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-800 
-              shadow-sm h-25 rounded"
+            className="flex items-start space-x-2 p-3 bg-gray-50 dark:bg-gray-800 
+              shadow-sm rounded"
           >
             <div
               className="w-10 h-10 flex justify-center items-center bg-blue-500 
@@ -68,39 +68,87 @@ export const BarcodeInputs: React.FC<BarcodeInputsProps> = ({
               {index + 1}
             </div>
 
-            <input
-              type="text"
-              placeholder="バーコード番号"
-              value={barcode.text}
-              className="border-2 p-2.5 rounded w-48 sm:w-64 
-                focus:outline-none focus:ring-2 focus:ring-blue-300
-                bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                border-gray-300 dark:border-gray-600"
-              onChange={(e) => handleInputChange(index, "text", e.target.value)}
-            />
-            <select
-              value={barcode.type}
-              onChange={(e) => handleInputChange(index, "type", e.target.value)}
-              className="border-2 p-2.5 rounded 
-                focus:outline-none focus:ring-2 focus:ring-blue-300
-                bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                border-gray-300 dark:border-gray-600"
-            >
-              <option value="ean13">JANコード</option>
-              <option value="itf">ITFコード</option>
-              <option value="databar">GS1データバー</option>
-            </select>
+            <div className="flex-1">
+              <div className="flex flex-col space-y-2">
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    placeholder="バーコード番号"
+                    value={barcode.text}
+                    className="border-2 p-2.5 rounded w-48 sm:w-64 
+                      focus:outline-none focus:ring-2 focus:ring-blue-300
+                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                      border-gray-300 dark:border-gray-600"
+                    onChange={(e) => handleInputChange(index, "text", e.target.value)}
+                  />
+                  <select
+                    value={barcode.type}
+                    onChange={(e) => handleInputChange(index, "type", e.target.value)}
+                    className="border-2 p-2.5 rounded 
+                      focus:outline-none focus:ring-2 focus:ring-blue-300
+                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                      border-gray-300 dark:border-gray-600"
+                  >
+                    <option value="ean13">JANコード</option>
+                    <option value="itf">ITFコード</option>
+                    <option value="databar">GS1データバー</option>
+                  </select>
+                </div>
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    placeholder="名前（オプション）"
+                    value={barcode.name || ""}
+                    className="border-2 p-2 rounded w-32 text-sm
+                      focus:outline-none focus:ring-2 focus:ring-blue-300
+                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                      border-gray-300 dark:border-gray-600"
+                    onChange={(e) => handleInputChange(index, "name", e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="備考（オプション）"
+                    value={barcode.note || ""}
+                    className="border-2 p-2 rounded flex-1 text-sm
+                      focus:outline-none focus:ring-2 focus:ring-blue-300
+                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+                      border-gray-300 dark:border-gray-600"
+                    onChange={(e) => handleInputChange(index, "note", e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
 
             {showBarcodes && barcode.text && (
               <>
-                <div className="flex-1 flex justify-center items-center space-x-2">
-                  <canvas id={`barcode-${index}`} className="bg-white"></canvas>
+                <div className="flex-1 flex flex-col items-center space-y-2">
+                  <div className="flex flex-col items-center">
+                    <canvas id={`barcode-${index}`} className="bg-white"></canvas>
+                    {(barcode.name || barcode.note) && (
+                      <div className="mt-2 text-center">
+                        {barcode.name && (
+                          <div className="font-semibold text-gray-800 dark:text-gray-200">
+                            {barcode.name}
+                          </div>
+                        )}
+                        {barcode.note && (
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                            {barcode.note}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                   <div className="flex flex-col space-y-2">
                     <button
                       onClick={() =>
                         saveBarcode(
                           barcode.text,
-                          { format: barcode.type },
+                          { 
+                            format: barcode.type,
+                            name: barcode.name,
+                            note: barcode.note
+                          },
                           "png"
                         )
                       }
@@ -116,7 +164,11 @@ export const BarcodeInputs: React.FC<BarcodeInputsProps> = ({
                       onClick={() =>
                         saveBarcode(
                           barcode.text,
-                          { format: barcode.type },
+                          { 
+                            format: barcode.type,
+                            name: barcode.name,
+                            note: barcode.note
+                          },
                           "svg"
                         )
                       }

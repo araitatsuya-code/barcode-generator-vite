@@ -51,6 +51,7 @@ export const saveBarcode = (
       : "code128";
 
     if (format === "svg") {
+      // SVG用の実装（後で拡張）
       const svg = document.createElement("svg");
       JsBarcode(svg, barcodeData, {
         format: barcodeFormat,
@@ -74,8 +75,13 @@ export const saveBarcode = (
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } else {
+      // PNG用にCanvasを使用してテキストも描画
       const canvas = document.createElement("canvas");
-      JsBarcode(canvas, barcodeData, {
+      const ctx = canvas.getContext("2d");
+      
+      // 一時的なcanvasでバーコードサイズを取得
+      const tempCanvas = document.createElement("canvas");
+      JsBarcode(tempCanvas, barcodeData, {
         format: barcodeFormat,
         width: 1,
         height: 40,
@@ -83,8 +89,49 @@ export const saveBarcode = (
         displayValue: true,
       });
 
+      // 名前と備考がある場合の追加高さを計算
+      const hasName = options.name && options.name.trim();
+      const hasNote = options.note && options.note.trim();
+      const additionalHeight = (hasName ? 25 : 0) + (hasNote ? 20 : 0) + (hasName || hasNote ? 10 : 0);
+      
+      // 最終canvasのサイズを設定
+      canvas.width = Math.max(tempCanvas.width, 300);
+      canvas.height = tempCanvas.height + additionalHeight;
+      
+      // 白い背景を描画
+      if (ctx) {
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // バーコードを中央に描画
+        const barcodeX = (canvas.width - tempCanvas.width) / 2;
+        ctx.drawImage(tempCanvas, barcodeX, 0);
+        
+        // 名前と備考を描画
+        if (hasName || hasNote) {
+          let textY = tempCanvas.height + 15;
+          ctx.textAlign = "center";
+          ctx.fillStyle = "black";
+          
+          if (hasName) {
+            ctx.font = "bold 16px Arial";
+            ctx.fillText(options.name, canvas.width / 2, textY);
+            textY += 25;
+          }
+          
+          if (hasNote) {
+            ctx.font = "12px Arial";
+            ctx.fillStyle = "#666666";
+            ctx.fillText(options.note, canvas.width / 2, textY);
+          }
+        }
+      }
+
       const link = document.createElement("a");
-      link.download = `barcode-${barcodeData}.png`;
+      const filename = hasName 
+        ? `barcode-${options.name}-${barcodeData}.png`
+        : `barcode-${barcodeData}.png`;
+      link.download = filename;
       link.href = canvas.toDataURL("image/png");
       link.type = "image/png";
       
