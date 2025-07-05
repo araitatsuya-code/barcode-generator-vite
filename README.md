@@ -3,8 +3,7 @@
 ## 概要
 このアプリケーションは、複数のバーコードを一括で生成し、PNG形式またはSVG形式で保存できるデスクトップアプリケーションです。
 
-![image](https://github.com/user-attachments/assets/5705de17-06fe-4bb2-991c-f3f62cf12f2a)
-
+![image](https://github.com/user-attachments/assets/25ecf476-9b7c-407a-bb07-5f11da29c826)
 
 ## 機能
 - 複数のバーコード同時生成
