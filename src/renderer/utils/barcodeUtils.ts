@@ -1,4 +1,6 @@
 import JsBarcode from "jsbarcode";
+import jsPDF from "jspdf";
+import { Barcode } from "../types";
 
 // options の型を定義
 interface BarcodeOptions {
@@ -196,5 +198,118 @@ export const saveBarcode = (
   } catch (error) {
     console.error("バーコード生成エラー:", error);
     alert("バーコードの生成に失敗しました。入力値を確認してください。");
+  }
+};
+
+export const saveBarcodesPDF = (barcodes: Barcode[]) => {
+  // 有効なバーコードのみをフィルタリング
+  const validBarcodes = barcodes.filter(barcode => barcode.text.trim());
+  
+  if (validBarcodes.length === 0) {
+    alert("出力するバーコードがありません。");
+    return;
+  }
+
+  try {
+    const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 20;
+    let currentY = margin;
+    
+    // バーコード数に応じてサイズを調整
+    const barcodeCount = validBarcodes.length;
+    const availableHeight = pageHeight - (margin * 2);
+    
+    // 1個なら大きく、複数なら小さく調整
+    let barcodeHeight: number;
+    let barcodeWidth: number;
+    let fontSize: number;
+    let canvasHeight: number;
+    let canvasWidth: number;
+    
+    if (barcodeCount === 1) {
+      // 1個の場合は大きめに
+      barcodeHeight = 80;
+      barcodeWidth = 160;
+      fontSize = 18;
+      canvasHeight = 100;
+      canvasWidth = 3;
+    } else if (barcodeCount <= 3) {
+      // 2-3個の場合は中サイズ
+      barcodeHeight = 60;
+      barcodeWidth = 140;
+      fontSize = 16;
+      canvasHeight = 80;
+      canvasWidth = 2.5;
+    } else {
+      // 4個以上の場合は小さめに
+      barcodeHeight = 45;
+      barcodeWidth = 120;
+      fontSize = 14;
+      canvasHeight = 60;
+      canvasWidth = 2;
+    }
+    
+    const textHeight = 25;
+    const itemSpacing = barcodeCount === 1 ? 20 : (barcodeCount <= 3 ? 15 : 10);
+    const totalItemHeight = barcodeHeight + textHeight + itemSpacing;
+
+    validBarcodes.forEach((barcode, index) => {
+      // 新しいページが必要かチェック
+      if (currentY + totalItemHeight > pageHeight - margin) {
+        pdf.addPage();
+        currentY = margin;
+      }
+
+      // バーコードタイプの変換
+      const barcodeFormat = barcode.type
+        ? barcodeTypeMap[barcode.type]
+        : "code128";
+
+      // 一時的なcanvasでバーコードを生成
+      const canvas = document.createElement("canvas");
+      JsBarcode(canvas, barcode.text, {
+        format: barcodeFormat,
+        width: canvasWidth,
+        height: canvasHeight,
+        fontSize: fontSize,
+        displayValue: true,
+      });
+
+      // バーコードをPDFに追加
+      const barcodeDataURL = canvas.toDataURL("image/png");
+      const barcodeX = (pageWidth - barcodeWidth) / 2;
+      
+      pdf.addImage(barcodeDataURL, "PNG", barcodeX, currentY, barcodeWidth, barcodeHeight);
+      currentY += barcodeHeight + 5;
+
+      // 名前と備考を追加（フォントサイズも調整）
+      const nameFontSize = barcodeCount === 1 ? 14 : (barcodeCount <= 3 ? 12 : 10);
+      const noteFontSize = barcodeCount === 1 ? 12 : (barcodeCount <= 3 ? 10 : 8);
+      
+      if (barcode.name && barcode.name.trim()) {
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(nameFontSize);
+        pdf.text(barcode.name, pageWidth / 2, currentY, { align: "center" });
+        currentY += barcodeCount === 1 ? 10 : 8;
+      }
+
+      if (barcode.note && barcode.note.trim()) {
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(noteFontSize);
+        pdf.text(barcode.note, pageWidth / 2, currentY, { align: "center" });
+        currentY += barcodeCount === 1 ? 10 : 8;
+      }
+
+      currentY += itemSpacing;
+    });
+
+    // PDFを保存
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '');
+    pdf.save(`barcodes-${timestamp}.pdf`);
+  } catch (error) {
+    console.error("PDF生成エラー:", error);
+    alert("PDFの生成に失敗しました。");
   }
 };
