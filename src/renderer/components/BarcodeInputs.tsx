@@ -111,7 +111,7 @@ export const BarcodeInputs: React.FC<BarcodeInputsProps> = ({
                     type="text"
                     placeholder="名前（オプション）"
                     value={barcode.name || ""}
-                    className="border-2 p-2 rounded w-32 text-sm
+                    className="border-2 p-2 rounded w-48 text-sm
                       focus:outline-none focus:ring-2 focus:ring-blue-300
                       bg-white dark:bg-gray-800 text-gray-900 dark:text-white
                       border-gray-300 dark:border-gray-600"
@@ -151,7 +151,7 @@ export const BarcodeInputs: React.FC<BarcodeInputsProps> = ({
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-col space-y-2">
+                  <div className="flex space-x-2">
                     <button
                       onClick={() =>
                         saveBarcode(
