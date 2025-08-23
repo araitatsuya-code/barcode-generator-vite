@@ -23,6 +23,14 @@ exports.default = async function notarizing(context) {
     });
   } catch (error) {
     console.error("公証中にエラーが発生しました:", error);
+    
+    // Staplingエラーの場合は警告のみ表示して続行
+    if (error.message && error.message.includes("Failed to staple")) {
+      console.warn("Staplingに失敗しましたが、公証は完了している可能性があります。手動でstaplingを試行してください。");
+      console.warn(`手動stapling: xcrun stapler staple "${appPath}"`);
+      return; // エラーを投げずに続行
+    }
+    
     throw error;
   }
 

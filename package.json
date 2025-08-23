@@ -1,7 +1,7 @@
 {
   "name": "barcode-generator-vite",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "バーコード生成デスクトップアプリケーション",
   "author": {
     "name": "araitatsuya_code",
@@ -18,6 +18,8 @@
     "watch": "tsc -w",
     "electron-dev": "concurrently \"npm run dev\" \"npm run watch\" \"electron .\"",
     "build:electron": "source .env && npm run build && electron-builder",
+    "build:win": "source .env && npm run build && electron-builder --win",
+    "build:all": "source .env && npm run build && electron-builder --mac --win --linux",
     "dist": "node -r dotenv/config ./node_modules/.bin/electron-builder"
   },
   "dependencies": {
@@ -90,13 +92,21 @@
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
       "identity": "${env.APPLE_DEVELOPER_IDENTITY}",
-      "icon": "src/assets/icon.icns"
+      "icon": "src/assets/icon.icns",
+      "signIgnore": [
+        "node_modules"
+      ],
+      "extendInfo": {
+        "ElectronTeamID": "${env.APPLE_TEAM_ID}"
+      }
     },
     "win": {
       "target": [
         "nsis"
       ],
-      "icon": "src/assets/icon.ico"
+      "icon": "src/assets/icon.ico",
+      "publisherName": "${env.PUBLISHER_NAME}",
+      "verifyUpdateCodeSignature": false
     },
     "linux": {
       "target": [
