@@ -41,7 +41,7 @@ function createWindow() {
 // Macの場合、Dockアイコンを設定
 if (process.platform === "darwin") {
   app.whenReady().then(() => {
-    app.dock.setIcon(getIconPath());
+    app.dock?.setIcon(getIconPath());
   });
 }
 
