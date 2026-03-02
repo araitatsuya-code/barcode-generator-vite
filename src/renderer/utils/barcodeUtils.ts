@@ -1,5 +1,5 @@
 import JsBarcode from "jsbarcode";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import { Barcode } from "../types";
 
 // options の型を定義
